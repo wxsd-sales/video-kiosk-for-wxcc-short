@@ -84,6 +84,34 @@
         <img id="orderImage" src="https://via.placeholder.com/800x600/cccccc/000000?text=Order+Image" alt="Order Image" class="order-image">
     </div>
 
+    <div id="expertPage" class="container hidden">
+        <img id="logoImage2" src="https://bulma.io/images/bulma-logo.png" alt="Logo" class="logo">
+        
+        <p class="title is-4 has-text-centered mb-4">
+            Enter The Quote Number you would like to review
+        </p>
+        
+        <div class="field">
+            <div class="control">
+                <input 
+                    class="input quote-input" 
+                    type="text" 
+                    placeholder="000"
+                    maxlength="3"
+                    disabled
+                >
+            </div>
+        </div>
+        
+        <p class="title is-4 has-text-centered mt-5 mb-4">
+            Looking for an expert?
+        </p>
+        
+        <button class="button is-dark is-large is-rounded">
+            Connect with an agent
+        </button>
+    </div>
+
     <script>
         // Set logo from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
@@ -92,12 +120,14 @@
         
         if (logoUrl) {
             document.getElementById('logoImage').src = logoUrl;
+            document.getElementById('logoImage2').src = logoUrl;
         }
         
         // Handle input changes
         const numberInput = document.getElementById('numberInput');
         const mainPage = document.getElementById('mainPage');
         const imagePage = document.getElementById('imagePage');
+        const expertPage = document.getElementById('expertPage');
         const closeButton = document.getElementById('closeButton');
         const orderImage = document.getElementById('orderImage');
         
@@ -114,10 +144,9 @@
         });
         
         closeButton.addEventListener('click', function() {
-            // Go back to main page
+            // Go to expert page instead of main page
             imagePage.classList.add('hidden');
-            mainPage.classList.remove('hidden');
-            numberInput.value = ''; // Clear input
+            expertPage.classList.remove('hidden');
         });
     </script>
 </body>
