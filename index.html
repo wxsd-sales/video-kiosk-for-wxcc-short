@@ -57,6 +57,7 @@
             display: none !important;
         }
     </style>
+    <script src="https://unpkg.com/jsxapi@5.1.1/dist/jsxapi.js"></script>
 </head>
 <body>
     <div id="mainPage" class="container">
@@ -107,11 +108,10 @@
             Looking for an expert?
         </p>
         
-        <button class="button is-dark is-large is-rounded">
+        <button id="connectButton" class="button is-dark is-large is-rounded">
             Connect with an agent
         </button>
     </div>
-
     <script>
         // Set logo from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
@@ -123,6 +123,24 @@
             document.getElementById('logoImage2').src = logoUrl;
         }
         
+        // Get data to connect to device from URL parameters
+        const username = urlParams.get('username');
+        const password = urlParams.get('password');
+        const customerName = urlParams.get('customername');
+        const customerEmail = urlParams.get('customeremail');
+        const connectAppId = urlParams.get('connectappid');
+        const ipAddress = urlParams.get('ipaddress');
+
+
+        let connected = false;
+        let deviceId = '';
+        let deviceSIPURI = '';
+
+        // Connect to device
+        if (username && password) {
+            console.log('Connecting to Device', ipAddress);
+            connectToDevice();
+        } 
         // Handle input changes
         const numberInput = document.getElementById('numberInput');
         const mainPage = document.getElementById('mainPage');
@@ -130,6 +148,7 @@
         const expertPage = document.getElementById('expertPage');
         const closeButton = document.getElementById('closeButton');
         const orderImage = document.getElementById('orderImage');
+        const connectButton = document.getElementById('connectButton');
         
         numberInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && this.value.length > 0) {
@@ -148,6 +167,93 @@
             imagePage.classList.add('hidden');
             expertPage.classList.remove('hidden');
         });
+
+        async function connectToDevice() { 
+            console.log ({ipAddress, username, password});
+            console.log (jsxapi);
+            jsxapi.connect (ipAddress, {
+                username: username,
+                password: password,
+            })
+            .on("error", (error) => {
+                
+                // Handle connection issues and restore websocket if closed
+                if (error == "WebSocket closed unexpectedly" && connected) {
+                    // Only attempt to reconnect if previously connected
+                    console.log("WebSocket closed, reconnecting");
+                    connected = false;
+                    setTimeout(connectToDevice, 1000);
+                } else {
+                    if (error == undefined && !connected) {
+                        console.log ('Error connecting to device:', error);
+                        // Display error when failed to create initial connection
+
+                    } else if (error == undefined && connected) {
+                        console.log(
+                        "JSXAPI Error [undefined] - taking no action until the WebSocket has been closed"
+                        );
+                    } else {
+                        console.error("Error", JSON.stringify(error)); 
+                    }
+                }
+            })
+            .on("ready", async (xapi) => {
+                connected = true;
+                console.log('Connected to Device');
+                
+                // Get deviceID
+                deviceId = await xapi.Status.SystemUnit.Hardware.Module.DeviceId.get();
+                console.log('deviceId: ',deviceId);
+
+                // Get Device SIP URI
+                const contactInfo = await xapi.Status.UserInterface.ContactInfo.ContactMethod.get();
+                if(contactInfo.length > 0){
+                    for(let contact of contactInfo){
+                        if(contact.Number && contact.Number.indexOf("@") > 0){
+                            deviceSIPURI = contact.Number;
+                            console.log('Device SIP URI: ', deviceSIPURI); 
+                            break;
+                        }
+                    }
+                }
+                // The logic when you click the 'Connect with an agent' button has to me here
+                connectButton.addEventListener('click', function() {
+                    // Alert the user
+                    xapi.Command.UserInterface.Message.Alert.Display
+                        ({Duration: 10, Text: 'Please wait while we connect you with an agent', Title: 'Connecting'});
+                    
+                    // Send request to Connect
+                    console.log ('Senging request to Connect');
+                    const connectURL = 'https://hooks.au.webexconnect.io/events/WDRJXO4211';
+                    let payload = {
+                            "customerName":customerName,
+                            "customerEmail":customerEmail,
+                            "videoCallDestination": deviceSIPURI,
+                            "inappmessaging.appId": connectAppId,
+                            "inappmessaging.userId": deviceId
+                        }
+                    fetch(connectURL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Fetch Success:', data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            });
+        }
     </script>
 </body>
 </html>
