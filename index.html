@@ -117,10 +117,18 @@
         const urlParams = new URLSearchParams(window.location.search);
         const logoUrl = urlParams.get('logo');
         const orderUrl = urlParams.get('order');
+        const backgroundUrl = urlParams.get('background');
         
         if (logoUrl) {
             document.getElementById('logoImage').src = logoUrl;
             document.getElementById('logoImage2').src = logoUrl;
+        }
+
+        if (backgroundUrl) {
+            document.body.style.backgroundImage = `url('${backgroundUrl}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundRepeat = 'no-repeat';
         }
         
         // Get data to connect to device from URL parameters
@@ -130,7 +138,6 @@
         const customerEmail = urlParams.get('customeremail');
         const connectAppId = urlParams.get('connectappid');
         const ipAddress = urlParams.get('ipaddress');
-
 
         let connected = false;
         let deviceId = '';
@@ -221,6 +228,7 @@
                     // Alert the user
                     xapi.Command.UserInterface.Message.Alert.Display
                         ({Duration: 10, Text: 'Please wait while we connect you with an agent', Title: 'Connecting'});
+                    
                     
                     // Send request to Connect
                     console.log ('Senging request to Connect');
