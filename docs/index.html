@@ -63,7 +63,7 @@
                 "alertWaitMessage": "Por favor espera mientras te conectamos con un agente"
             },
         }
-        // Read URL parameters
+        // Read some URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const logoUrl = urlParams.get('logo');
         const backgroundUrl = urlParams.get('background');
@@ -93,6 +93,9 @@
         const connectAppId = urlParams.get('connectappid');
         const ipAddress = urlParams.get('ipaddress');
 
+        // Get Connect Webhook URL
+        const connectURL = urlParams.get('connectURL')
+        
         let connected = false;
         let deviceId = '';
         let deviceSIPURI = '';
@@ -163,7 +166,6 @@
                     
                     // Send request to Connect
                     console.log ('Senging request to Connect');
-                    const connectURL = 'https://hooks.au.webexconnect.io/events/WDRJXO4211';
                     let payload = {
                             "customerName":customerName,
                             "customerEmail":customerEmail,
