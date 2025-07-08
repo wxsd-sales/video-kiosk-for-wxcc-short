@@ -36,7 +36,7 @@
     <script src="https://unpkg.com/jsxapi@5.1.1/dist/jsxapi.js"></script>
 </head>
 <body>
-    <div id="expertPage" class="container">
+    <div id="expertSection" class="container">
         <div class="content-box">
             <img id="logoImage2" src="https://bulma.io/images/bulma-logo.png" alt="Logo" class="logo">
                                 
@@ -50,23 +50,40 @@
         </div>
     </div>
     <script>
-        // Set logo from URL parameter
+        // Multiple languages support
+        const translations = {
+            en: {
+                "title": "Looking for an expert?",
+                "buttonText": "Connect with an agent",
+                "alertWaitMessage": "Please wait while we connect you with an agent"
+            },
+            es: {
+                "title": "Necesitas un experto?",
+                "buttonText": "Conectando con un agente",
+                "alertWaitMessage": "Por favor espera mientras te conectamos con un agente"
+            },
+        }
+        // Read URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const logoUrl = urlParams.get('logo');
-        const orderUrl = urlParams.get('order');
         const backgroundUrl = urlParams.get('background');
+        const language = urlParams.get('lang') || 'en';
         
         if (logoUrl) {
-            // document.getElementById('logoImage').src = logoUrl;
             document.getElementById('logoImage2').src = logoUrl;
         }
 
+        // For backgorund, entire image, full screen, centered
         if (backgroundUrl) {
             document.body.style.backgroundImage = `url('${backgroundUrl}')`;
             document.body.style.backgroundSize = 'cover';
             document.body.style.backgroundPosition = 'center';
             document.body.style.backgroundRepeat = 'no-repeat';
         }
+
+        // Set page language
+        document.querySelector('.title').textContent = translations[language].title;
+        document.getElementById('connectButton').textContent = translations[language].buttonText;
         
         // Get data to connect to device from URL parameters
         const username = urlParams.get('username');
@@ -85,9 +102,7 @@
             console.log('Connecting to Device', ipAddress);
             connectToDevice();
         } 
-        // Handle input changes
-        
-        const expertPage = document.getElementById('expertPage');
+        // Handle button click
         const connectButton = document.getElementById('connectButton');
                 
         async function connectToDevice() { 
@@ -138,11 +153,12 @@
                         }
                     }
                 }
-                // The logic when you click the 'Connect with an agent' button has to me here
+                // The logic when you click the 'Connect with an agent' button has to be here
                 connectButton.addEventListener('click', function() {
                     // Alert the user
+                    const alertingText = translations['language'].alertWaitMessage
                     xapi.Command.UserInterface.Message.Alert.Display
-                        ({Duration: 10, Text: 'Please wait while we connect you with an agent', Title: 'Connecting'});
+                        ({Duration: 10, Text: alertingText, Title: 'Connecting'});
                     
                     
                     // Send request to Connect
