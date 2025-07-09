@@ -55,19 +55,24 @@
             en: {
                 "title": "Looking for an expert?",
                 "buttonText": "Connect with an agent",
-                "alertWaitMessage": "Please wait while we connect you with an agent"
+                "alertWaitMessage": "Please wait while we connect you with an agent",
+                "alertTitle": "Connecting.."
             },
             es: {
                 "title": "Necesitas un experto?",
                 "buttonText": "Conectar con un agente",
-                "alertWaitMessage": "Por favor espera mientras te conectamos con un agente"
+                "alertWaitMessage": "Por favor espera mientras te conectamos con un agente",
+                "alertTitle": "Conectando.."
             },
         }
         // Read some URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const logoUrl = urlParams.get('logo');
         const backgroundUrl = urlParams.get('background');
-        const language = urlParams.get('lang') || 'en';
+        const urlLang = urlParams.get('lang');
+        console.log (urlLang);
+        const language = translations[urlLang] ? urlLang : 'en'; // checking that the received language is supported
+        console.log ('language:', language);
         
         if (logoUrl) {
             document.getElementById('logoImage2').src = logoUrl;
@@ -159,9 +164,11 @@
                 // The logic when you click the 'Connect with an agent' button has to be here
                 connectButton.addEventListener('click', function() {
                     // Alert the user
-                    const alertingText = translations['language'].alertWaitMessage
+                    const alertingText = translations[language].alertWaitMessage
+                    const alertingTitle = translations[language].alertTitle
+                    console.log(alertingText);
                     xapi.Command.UserInterface.Message.Alert.Display
-                        ({Duration: 10, Text: alertingText, Title: 'Connecting'});
+                        ({Duration: 10, Text: alertingText, Title: alertingTitle});
                     
                     
                     // Send request to Connect
