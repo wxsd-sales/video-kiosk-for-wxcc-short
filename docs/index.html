@@ -70,7 +70,6 @@
         const logoUrl = urlParams.get('logo');
         const backgroundUrl = urlParams.get('background');
         const urlLang = urlParams.get('lang');
-        console.log (urlLang);
         const language = translations[urlLang] ? urlLang : 'en'; // checking that the received language is supported
         console.log ('language:', language);
         
