@@ -99,6 +99,9 @@
         // Get Connect Webhook URL
         const connectURL = urlParams.get('connectURL')
 
+        // Handle button click
+        const connectButton = document.getElementById('connectButton'); 
+
         // Validate required parameters before proceeding
         if (!validateRequiredParams()) {
             console.error('Cannot proceed - missing required parameters');
@@ -117,9 +120,6 @@
         let deviceId = '';
         let deviceSIPURI = '';
 
-        // Handle button click
-        const connectButton = document.getElementById('connectButton'); 
-       
         /* Connects to the video endoint and sends alert message */
         async function connectToDevice() { 
             console.log ({ipAddress, username, password});
@@ -213,7 +213,7 @@
     
         /* Checks if all URL paratemeters are present */
         function validateRequiredParams() {
-            const required = ['logoUrl','backgroundUrl','connectURL', 'connectAppId', 'username', 'password', 'customerName','ipAddress'];
+            const required = ['logo','background','connectURL', 'connectappid', 'username', 'password', 'customername','ipaddress'];
             const missing = required.filter(param => !urlParams.get(param));
             if (missing.length > 0) {
                 console.error('Missing required parameters:', missing);
