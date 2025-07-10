@@ -104,14 +104,15 @@
         let deviceId = '';
         let deviceSIPURI = '';
 
-        // Connect to device
+        // Handle button click
+        const connectButton = document.getElementById('connectButton');
+        
+        // Connect to video endpoint
         if (username && password) {
             console.log('Connecting to Device', ipAddress);
             connectToDevice();
         } 
-        // Handle button click
-        const connectButton = document.getElementById('connectButton');
-                
+       
         async function connectToDevice() { 
             console.log ({ipAddress, username, password});
             console.log (jsxapi);
