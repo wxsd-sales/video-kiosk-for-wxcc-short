@@ -105,7 +105,12 @@
             // Optional: disable button or show error message
             connectButton.disabled = true;
             connectButton.textContent = 'Error: missing some parameters';
-            return; // Exit early
+        } else {
+            // Connect to video endpoint
+            if (username && password) {
+                console.log('Connecting to Device', ipAddress);
+                connectToDevice();
+            }
         }
         
         let connected = false;
@@ -113,13 +118,7 @@
         let deviceSIPURI = '';
 
         // Handle button click
-        const connectButton = document.getElementById('connectButton');
-        
-        // Connect to video endpoint
-        if (username && password) {
-            console.log('Connecting to Device', ipAddress);
-            connectToDevice();
-        } 
+        const connectButton = document.getElementById('connectButton'); 
        
         /* Connects to the video endoint and sends alert message */
         async function connectToDevice() { 
