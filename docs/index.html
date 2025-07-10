@@ -93,12 +93,20 @@
         const username = urlParams.get('username');
         const password = urlParams.get('password');
         const customerName = urlParams.get('customername');
-        const customerEmail = urlParams.get('customeremail');
+        const customerEmail = urlParams.get('customeremail') ?? 'example@test.com';
         const connectAppId = urlParams.get('connectappid');
         const ipAddress = urlParams.get('ipaddress');
-
         // Get Connect Webhook URL
         const connectURL = urlParams.get('connectURL')
+
+        // Validate required parameters before proceeding
+        if (!validateRequiredParams()) {
+            console.error('Cannot proceed - missing required parameters');
+            // Optional: disable button or show error message
+            connectButton.disabled = true;
+            connectButton.textContent = 'Error: missing some parameters';
+            return; // Exit early
+        }
         
         let connected = false;
         let deviceId = '';
@@ -113,6 +121,7 @@
             connectToDevice();
         } 
        
+        /* Connects to the video endoint and sends alert message */
         async function connectToDevice() { 
             console.log ({ipAddress, username, password});
             console.log (jsxapi);
@@ -129,7 +138,7 @@
                     connected = false;
                     setTimeout(connectToDevice, 1000);
                 } else {
-                    if (error == undefined && !connected) {
+                    if (error === undefined && !connected) {
                         console.log ('Error connecting to device:', error);
                         // Display error when failed to create initial connection
 
@@ -172,7 +181,7 @@
                     
                     
                     // Send request to Connect
-                    console.log ('Senging request to Connect');
+                    console.log ('Sending request to Connect');
                     let payload = {
                             "customerName":customerName,
                             "customerEmail":customerEmail,
@@ -201,6 +210,17 @@
                         });
                 });
             });
+        }
+    
+        /* Checks if all URL paratemeters are present */
+        function validateRequiredParams() {
+            const required = ['logoUrl','backgroundUrl','connectURL', 'connectAppId', 'username', 'password', 'customerName','ipAddress'];
+            const missing = required.filter(param => !urlParams.get(param));
+            if (missing.length > 0) {
+                console.error('Missing required parameters:', missing);
+                return false;
+            }
+            return true;
         }
     </script>
 </body>
